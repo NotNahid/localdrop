@@ -1,0 +1,33 @@
+name: Build LocalDrop EXE
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Libraries
+      run: |
+        pip install pyinstaller
+        pip install customtkinter requests  # <--- CRITICAL: Added dependencies here!
+
+    - name: Build EXE
+      run: |
+        # --noconsole means the black box won't pop up (good for GUI apps)
+        # --onefile means everything is packed into a single .exe
+        pyinstaller --noconsole --onefile localdrop.py
+
+    - name: Upload EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: LocalDrop-Windows
+        path: dist/localdrop.exe
